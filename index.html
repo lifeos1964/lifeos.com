@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LifeOS — Personal Life Operating System</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.116.0?bundle"
+            }
+        }
+    </script>
+    <script>
+        window.__LIFEOS_SUPABASE__ = {
+            url: 'https://rfcsfgshuepyjgjcjjel.supabase.co',
+            publishableKey: 'sb_publishable_1aVTMvxW000l6qsTcyWPfQ_wHBxJ_Vi'
+        };
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img class="logo-icon" src="./icon.png" alt="LifeOS" width="36" height="36">
+                <span class="logo-text">LifeOS</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#/dashboard" class="nav-item active" data-route="dashboard"><i class="fa-solid fa-house-chimney"></i> <span data-i18n="dashboard">Dashboard</span></a>
+                <a href="#/calendar" class="nav-item" data-route="calendar"><i class="fa-solid fa-calendar-days"></i> <span data-i18n="calendar">Calendar</span></a>
+                <a href="#/tasks" class="nav-item" data-route="tasks"><i class="fa-solid fa-list-check"></i> <span data-i18n="tasks">Tasks</span></a>
+                <a href="#/shopping" class="nav-item" data-route="shopping"><i class="fa-solid fa-cart-shopping"></i> <span data-i18n="shopping">Shopping</span></a>
+                <a href="#/money" class="nav-item" data-route="money"><i class="fa-solid fa-wallet"></i> <span data-i18n="money">Money</span></a>
+                <a href="#/home" class="nav-item" data-route="home"><i class="fa-solid fa-house"></i> <span data-i18n="home">Home</span></a>
+                <a href="#/wellness" class="nav-item" data-route="wellness"><i class="fa-solid fa-heart-pulse"></i> <span data-i18n="wellness">Wellness</span></a>
+                <a href="#/travel" class="nav-item" data-route="travel"><i class="fa-solid fa-plane"></i> <span>Travel</span></a>
+                <a href="#/family" class="nav-item" data-route="family"><i class="fa-solid fa-users"></i> <span data-i18n="family">Family</span></a>
+                <a href="#/goals" class="nav-item" data-route="goals"><i class="fa-solid fa-bullseye"></i> <span data-i18n="goals">Goals</span></a>
+                <a href="#/notes" class="nav-item" data-route="notes"><i class="fa-solid fa-note-sticky"></i> <span data-i18n="notes">Notes</span></a>
+                <a href="#/social" class="nav-item" data-route="social"><i class="fa-solid fa-share-nodes"></i> <span data-i18n="social">Social Hub</span></a>
+                <a href="#/ai" class="nav-item" data-route="ai"><i class="fa-solid fa-brain"></i> <span data-i18n="ai">AI Assistant</span></a>
+            </nav>
+            <button class="sidebar-plan-card" id="plans-trigger" type="button">
+                <span class="sidebar-plan-icon"><i class="fa-solid fa-sparkles"></i></span>
+                <span class="sidebar-plan-copy">
+                    <strong>Upgrade LifeOS</strong>
+                    <small id="sidebar-plan-name">Free plan</small>
+                </span>
+                <i class="fa-solid fa-chevron-right sidebar-plan-arrow"></i>
+            </button>
+            <div class="sidebar-footer">
+                <button id="currency-toggle" class="theme-toggle-btn">
+                    <i class="fa-solid fa-money-bill-wave"></i> <span data-i18n="currency">Currency</span>
+                </button>
+                <button id="accent-toggle" class="theme-toggle-btn">
+                    <i class="fa-solid fa-palette"></i> <span data-i18n="accent">Accent Color</span>
+                </button>
+                <button id="theme-toggle" class="theme-toggle-btn">
+                    <i class="fa-solid fa-moon"></i> <span data-i18n="darkMode">Dark Mode</span>
+                </button>
+                <label class="language-control" for="language-select"><span data-i18n="language">Language</span>
+                    <select id="language-select" class="form-control" aria-label="Language"></select>
+                </label>
+            </div>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="global-search-input" data-i18n-placeholder="search" placeholder="Search LifeOS across tasks, events, notes, goals...">
+                    <div id="search-results-dropdown" class="search-dropdown hidden"></div>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" id="quick-add-btn" title="Quick Actions"><i class="fa-solid fa-plus"></i></button>
+                    <div class="user-profile">
+                        <div class="avatar">FA</div>
+                        <button class="username profile-button" id="profile-button" title="Open account profile">Firas</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Content Area -->
+            <main class="main-content" id="main-content">
+                <!-- Injected via Router -->
+            </main>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+        <a href="#/dashboard" class="mobile-nav-item active" data-route="dashboard"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="#/tasks" class="mobile-nav-item" data-route="tasks"><i class="fa-solid fa-list-check"></i><span>Tasks</span></a>
+        <a href="#/calendar" class="mobile-nav-item" data-route="calendar"><i class="fa-solid fa-calendar"></i><span>Calendar</span></a>
+        <a href="#/money" class="mobile-nav-item" data-route="money"><i class="fa-solid fa-wallet"></i><span>Money</span></a>
+        <button type="button" class="mobile-nav-item" id="mobile-menu-btn" style="background:none;border:none;cursor:pointer;"><i class="fa-solid fa-bars"></i><span>Menu</span></button>
+    </nav>
+
+    <!-- Reusable Modal Container -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal-card" id="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Modal Title</h3>
+                <button class="close-modal-btn" id="modal-close" title="Close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Dynamic form or content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <div id="startup-error" class="startup-error" hidden>
+        <h2>LifeOS could not start</h2>
+        <p id="startup-error-message"></p>
+        <p>Use <strong>npm run dev</strong> or check the browser console for details.</p>
+    </div>
+
+    <!-- JavaScript Execution Entrypoint -->
+    <script type="module" src="js/app.js"></script>
+    <script>
+        window.addEventListener('error', event => {
+            const panel = document.getElementById('startup-error');
+            const message = document.getElementById('startup-error-message');
+            if (!panel || !message) return;
+            panel.hidden = false;
+            message.textContent = event.error?.message || event.message || 'A browser module failed to load. Check the browser console.';
+        });
+        window.addEventListener('unhandledrejection', event => {
+            const panel = document.getElementById('startup-error');
+            const message = document.getElementById('startup-error-message');
+            if (!panel || !message) return;
+            panel.hidden = false;
+            message.textContent = event.reason?.message || String(event.reason || 'A startup request failed.');
+        });
+    </script>
+</body>
+</html>
