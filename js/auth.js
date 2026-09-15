@@ -178,11 +178,6 @@ function openAuthDialog(forced, onReady, initialMode = 'register') {
                                 ${COUNTRIES.map(country => `<option value="${country}">${country}</option>`).join('')}
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="auth-phone">${t('phone')}</label>
-                            <input type="tel" id="auth-phone" class="form-control" autocomplete="tel" placeholder="+971 50 123 4567" required>
-                            <small class="form-help">Used for quick call actions on tasks and calendar events.</small>
-                        </div>
                     </div>
                     <p class="auth-error" aria-live="polite"></p>
                     <button type="submit" class="btn-primary auth-submit">${t('createAccount')}</button>
@@ -294,7 +289,7 @@ function openAuthDialog(forced, onReady, initialMode = 'register') {
             password,
             address: overlay.querySelector('#auth-address').value.trim(),
             country: overlay.querySelector('#auth-country').value,
-            phone: overlay.querySelector('#auth-phone').value.trim(),
+            phone: '',
         };
 
         const normalized = normalizeAccount(account);
