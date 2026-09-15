@@ -1,8 +1,11 @@
 import { showToast } from './utils.js';
+import { supabase, supabaseConfigured } from './supabase.js';
 
 const STORAGE_KEY = 'lifeos_plan';
 const BILLING_STORAGE_KEY = 'lifeos_billing_cycle';
 const YEARLY_DISCOUNT = 0.20;
+const paypalClientId = window.__LIFEOS_PAYPAL__?.clientId || import.meta.env.VITE_PAYPAL_CLIENT_ID || '';
+let paypalSdkPromise;
 
 const PLANS = [
     {
@@ -55,6 +58,50 @@ export function getFamilyLimit() {
 
 function savePlan(planId) {
     localStorage.setItem(STORAGE_KEY, planId);
+}
+
+function loadPayPalSdk() {
+    if (window.paypal) return Promise.resolve(window.paypal);
+    if (!paypalClientId) return Promise.reject(new Error('PayPal client ID is not configured.'));
+    if (paypalSdkPromise) return paypalSdkPromise;
+
+    paypalSdkPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(paypalClientId)}&currency=USD&intent=capture`;
+        script.onload = () => window.paypal ? resolve(window.paypal) : reject(new Error('PayPal SDK did not load.'));
+        script.onerror = () => reject(new Error('Unable to load PayPal. Check your connection.'));
+        document.head.appendChild(script);
+    });
+    return paypalSdkPromise;
+}
+
+async function startPayPalCheckout(button, planId, billingCycle, close, updateSidebarPlan) {
+    if (!supabaseConfigured) throw new Error('PayPal checkout requires a connected account.');
+    button.replaceWith(Object.assign(document.createElement('div'), { className: 'paypal-button-container' }));
+    const container = document.querySelector('.paypal-button-container');
+    const paypal = await loadPayPalSdk();
+    await paypal.Buttons({
+        style: { layout: 'vertical', shape: 'rect', label: 'paypal' },
+        createOrder: async () => {
+            const { data, error } = await supabase.functions.invoke('paypal-create-order', {
+                body: { plan: planId, billingCycle }
+            });
+            if (error || !data?.orderId) throw new Error(data?.error || error?.message || 'Unable to start PayPal checkout.');
+            return data.orderId;
+        },
+        onApprove: async data => {
+            const { data: result, error } = await supabase.functions.invoke('paypal-capture-order', {
+                body: { orderId: data.orderID }
+            });
+            if (error || result?.error) throw new Error(result?.error || error?.message || 'Unable to confirm PayPal payment.');
+            savePlan(result.plan);
+            localStorage.setItem(BILLING_STORAGE_KEY, result.billingCycle);
+            updateSidebarPlan();
+            close();
+            showToast('Payment complete. Your LifeOS plan is active.');
+        },
+        onError: error => showToast(error?.message || 'PayPal checkout failed.')
+    }).render(container);
 }
 
 function renderPlanCard(plan, currentPlan, billingCycle) {
@@ -110,7 +157,7 @@ export function initPlans() {
                         <button class="billing-option ${billingCycle === 'yearly' ? 'active' : ''}" data-cycle="yearly" type="button">Yearly <span>Save 20%</span></button>
                     </div>
                     <div class="plans-grid">${PLANS.map(plan => renderPlanCard(plan, currentPlan, billingCycle)).join('')}</div>
-                    <p class="plans-footnote"><i class="fa-solid fa-lock"></i> Payments are not connected yet. Plan selection is saved locally for this prototype.</p>
+                    <p class="plans-footnote"><i class="fa-solid fa-lock"></i> Secure checkout powered by PayPal.</p>
                 </div>
             </div>
         `;
@@ -121,12 +168,23 @@ export function initPlans() {
         overlay.onclick = event => { if (event.target === overlay) close(); };
         const bindPlanActions = () => {
             overlay.querySelectorAll('.plan-select-btn:not([disabled])').forEach(button => {
-                button.onclick = () => {
-                    savePlan(button.dataset.plan);
-                    localStorage.setItem(BILLING_STORAGE_KEY, billingCycle);
-                    updateSidebarPlan();
-                    close();
-                    showToast(`You are now on the ${button.dataset.plan} plan (${billingCycle}).`);
+                button.onclick = async () => {
+                    const planId = button.dataset.plan;
+                    if (planId === 'free') {
+                        savePlan(planId);
+                        localStorage.setItem(BILLING_STORAGE_KEY, billingCycle);
+                        updateSidebarPlan();
+                        close();
+                        showToast('You are now on the Free plan.');
+                        return;
+                    }
+                    button.disabled = true;
+                    try {
+                        await startPayPalCheckout(button, planId, billingCycle, close, updateSidebarPlan);
+                    } catch (error) {
+                        button.disabled = false;
+                        showToast(error.message || 'Unable to start PayPal checkout.');
+                    }
                 };
             });
         };
