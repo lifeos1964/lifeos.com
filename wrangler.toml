@@ -1,0 +1,9 @@
+name = "lifeos"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-15"
+
+[[d1_databases]]
+binding = "LIFEOS_DB"
+database_name = "lifeos-db"
+database_id = "b606ef06-2ef5-4787-874a-f8584cc43665"
+migrations_dir = "d1_migrations"

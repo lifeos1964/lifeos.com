@@ -1,4 +1,18 @@
 {
+  "name": "lifeos",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy:cloudflare": "npm run build && npx wrangler pages deploy dist",
+    "d1:migrate": "npx wrangler d1 migrations apply lifeos-db --remote"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
     "@capacitor/app": "^8.1.1",
@@ -10,11 +24,5 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "vite": "^8.3.0"
-  },
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "deploy:cloudflare": "npm run build && npx wrangler pages deploy dist"
   }
 }
